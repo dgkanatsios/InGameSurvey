@@ -14,6 +14,7 @@ function insertSurvey(body) {
                     const survey = {
                         PartitionKey: constants.surveysPartitionKey,
                         RowKey: body.surveyName,
+                        SurveyName: body.surveyName,
                         Data: JSON.stringify(body.surveyData),
                         Active: true
                     };
