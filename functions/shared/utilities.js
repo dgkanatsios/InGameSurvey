@@ -1,6 +1,6 @@
 module.exports = {
     validateDeleteSurveyResponsesData: function (req) {
-        if (req && req.query && req.params.surveyName && req.params.surveyName.trim() != "")
+        if (req && req.query && req.query.surveyName && req.query.surveyName.trim() != "")
             return true;
         else return false;
     },
