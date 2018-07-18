@@ -7,7 +7,7 @@ namespace InGameSurveySDK
 {
     public class InGameSurveySDKClient : MonoBehaviour
     {
-        public string SurveysUrl;
+        public string GetSurveysUrl;
         public string PostSurveyResponseUrl;
         public static InGameSurveySDKClient Instance;
 
@@ -15,7 +15,7 @@ namespace InGameSurveySDK
         void Awake()
         {
             Instance = this;
-            Utilities.ValidateForNull(SurveysUrl);
+            Utilities.ValidateForNull(GetSurveysUrl);
         }
 
 
@@ -24,7 +24,7 @@ namespace InGameSurveySDK
         public void GetSurveys(Action<CallbackResponse<Survey[]>> callback)
         {
             Utilities.ValidateForNull(callback);
-            StartCoroutine(GetSurveys(SurveysUrl, callback));
+            StartCoroutine(GetSurveys(GetSurveysUrl, callback));
         }
 
         public void PostSurveyResponse(SurveyResponse surveyResponse, Action<CallbackResponse> callback)
@@ -38,7 +38,7 @@ namespace InGameSurveySDK
         private IEnumerator GetSurveys(string url, Action<CallbackResponse<Survey[]>> callback)
         {
             using (UnityWebRequest www = Utilities.BuildInGameSurveyAPIWebRequest
-                (SurveysUrl, HttpMethod.Get.ToString(), null))
+                (GetSurveysUrl, HttpMethod.Get.ToString(), null))
             {
                 yield return www.Send();
                 if (Globals.DebugFlag) Debug.Log(www.responseCode);
