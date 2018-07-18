@@ -24,43 +24,43 @@ The Function App that gets deployed contains 5 Functions:
 - *addsamplesurvey*: This allows you to create a simple survey as well as two responses for that. Use for demo purposes
 - *addsurvey*: Use this to create a new survey. Survey format must be like:
 ```json
-const sampleSurvey = {
-    surveyName: 'mysurvey',
-    surveyData: [
+{
+    "surveyName": "mysurvey",
+    "surveyData": [
         {
-            questionID: "1",
-            questionText: "Sample Question 1",
-            questionType: "multiplechoice",
-            answers: [
+            "questionID": "1",
+            "questionText": "Sample Question 1",
+            "questionType": "multiplechoice",
+            "answers": [
                 {
-                    answerID: "1-1",
-                    answerText: "Answer 1"
+                    "answerID": "1-1",
+                    "answerText": "Answer 1"
                 },
                 {
-                    answerID: "1-2",
-                    answerText: "Answer 2"
+                    "answerID": "1-2",
+                    "answerText": "Answer 2"
                 },
                 {
-                    answerID: "1-3",
-                    answerText: "Answer 3"
+                    "answerID": "1-3",
+                    "answerText": "Answer 3"
                 }
             ]
         },
         {
-            questionID: "2",
-            questionText: "Sample Question 2",
-            questionType: "freetext"
+            "questionID": "2",
+            "questionText": "Sample Question 2",
+            "questionType": "freetext"
             
         }
     ]
-};
+}
 ```
 Pay special attention to the 'surveyName' property, as this must be a lowercase unique string. The Function App creates a new table in your Table Storage account to store the responses for this survey
 - *addresponse*: This Function enables the user to post a new response to a survey. The POST data should have the format:
 ```json
-const sampleResponse = {
-    surveyName: 'mysurvey',
-    responseData: [{
+{
+    "surveyName": "mysurvey",
+    "responseData": [{
         "questionID": "1",
         "answer": "1-2"
     },
@@ -72,7 +72,7 @@ const sampleResponse = {
         "questionID": "3",
         "answer": "3-1"
     }]
-};
+}
 ```
 - *getsurveys*: Use this to get the active surveys
 - *deletesurveyresponses*: When you pass the surveyName as a parameter in the query string, the Function will delete the responses. You can use this after you have finished processing the data. Disabled by default (for obvious reasons)
