@@ -41,7 +41,7 @@ function insertResponse(body) {
                 } else {
 
                     const response = {
-                        PartitionKey: constants.surveysPartitionKey,
+                        PartitionKey: constants.responsesPartitionKey,
                         RowKey: uuidv4(),
                         SurveyName: body.surveyName,
                         Data: JSON.stringify(body.responseData)
