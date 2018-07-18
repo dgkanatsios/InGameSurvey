@@ -76,8 +76,8 @@ function getSurveys() {
                         } else {
                             resolve(result.entries.map(entry => {
                                 const data = {
-                                    SurveyName: entry.SurveyName._,
-                                    Data: entry.Data._
+                                    surveyName: entry.SurveyName._,
+                                    data: entry.Data._
                                 };
                                 return data;
                             }));

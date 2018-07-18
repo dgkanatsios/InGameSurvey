@@ -24,20 +24,30 @@ public class InGameSurveySDKUIScript : MonoBehaviour
 
 
 
-    public void GetMessagesOfTheDay()
+    public void GetSurveys()
     {
-        InGameSurveySDKClient.Instance.GetMessagesOfTheDay(response =>
+        InGameSurveySDKClient.Instance.GetSurveys(response =>
         {
             if (response.Status == CallBackResult.Success)
             {
-                string result = "Get messages of the day completed";
+                string result = "Get surveys completed";
                 if (Globals.DebugFlag)
-                    foreach (var item in response.Result)
+                {
+                    WriteLine("Survey name:"+response.Result.surveyName);
+                    foreach (var item in response.Result.questions)
                     {
-                        WriteLine(string.Format("title is {0},message is {1}, from is {2}, to is {3}, showAlways is {4}, priority is {5}",
-                            item.title, item.message, item.from, item.to, item.alwaysShow, item.priority));
+                        WriteLine(string.Format("question ID is {0}, text is {1}, type is {2}", item.questionID, item.questionText, item.questionType));
+                        
+                        if(item.questionType == "multiplechoice")
+                        {
+                            foreach(var answer in item.answers)
+                            {
+                                WriteLine(string.Format("answer ID is {0}, answer text is {1}", answer.answerID, answer.answerText));
+                            }
+                        }
                     }
-                WriteLine(result);
+                    WriteLine(result);
+                }
             }
             else
             {
