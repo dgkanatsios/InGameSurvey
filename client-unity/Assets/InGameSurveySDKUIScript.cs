@@ -33,19 +33,23 @@ public class InGameSurveySDKUIScript : MonoBehaviour
                 string result = "Get surveys completed";
                 if (Globals.DebugFlag)
                 {
-                    WriteLine("Survey name:"+response.Result.surveyName);
-                    foreach (var item in response.Result.questions)
+                    foreach (var survey in response.Result)
                     {
-                        WriteLine(string.Format("question ID is {0}, text is {1}, type is {2}", item.questionID, item.questionText, item.questionType));
-                        
-                        if(item.questionType == "multiplechoice")
+                        WriteLine("Survey name:" + survey.surveyName);
+                        foreach (var question in survey.questions)
                         {
-                            foreach(var answer in item.answers)
+                            WriteLine(string.Format("question ID is {0}, text is {1}, type is {2}", question.questionID, question.questionText, question.questionType));
+
+                            if (question.questionType == "multiplechoice")
                             {
-                                WriteLine(string.Format("answer ID is {0}, answer text is {1}", answer.answerID, answer.answerText));
+                                foreach (var answer in question.answers)
+                                {
+                                    WriteLine(string.Format("answer ID is {0}, answer text is {1}", answer.answerID, answer.answerText));
+                                }
                             }
                         }
                     }
+                    
                     WriteLine(result);
                 }
             }
@@ -57,7 +61,37 @@ public class InGameSurveySDKUIScript : MonoBehaviour
         WriteLine("Loading...");
     }
 
+    public void PostSurveyResponse()
+    {
 
+        var surveyResponse = new SurveyResponse()
+        {
+            surveyName = "mysurvey",
+            responseData = new Response[]
+            {
+                new Response() { questionID = "1", answer = "1-2"},
+                new Response() { questionID = "2", answer = "2-3"},
+                new Response() { questionID = "3", answer = "free text"}
+            }
+        };
+
+        InGameSurveySDKClient.Instance.PostSurveyResponse(surveyResponse, response =>
+        {
+            if (response.Status == CallBackResult.Success)
+            {
+                string result = "Post survey response completed";
+                if (Globals.DebugFlag)
+                {
+                   WriteLine(result);
+                }
+            }
+            else
+            {
+                WriteLine(response.Exception.Message);
+            }
+        });
+        WriteLine("Loading...");
+    }
 
 
     public void WriteLine(string s)

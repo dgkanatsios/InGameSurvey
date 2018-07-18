@@ -7,35 +7,42 @@ namespace InGameSurveySDK
 {
     public class InGameSurveySDKClient : MonoBehaviour
     {
-        public string GetSurveysUrl;
+        public string SurveysUrl;
+        public string PostSurveyResponseUrl;
         public static InGameSurveySDKClient Instance;
 
 
         void Awake()
         {
             Instance = this;
-            Utilities.ValidateForNull(GetSurveysUrl);
+            Utilities.ValidateForNull(SurveysUrl);
         }
 
 
 
 
-        public void GetSurveys(Action<CallbackResponse<Survey>> callback)
+        public void GetSurveys(Action<CallbackResponse<Survey[]>> callback)
         {
             Utilities.ValidateForNull(callback);
-            StartCoroutine(GetSurveys(GetSurveysUrl, callback));
+            StartCoroutine(GetSurveys(SurveysUrl, callback));
+        }
+
+        public void PostSurveyResponse(SurveyResponse surveyResponse, Action<CallbackResponse> callback)
+        {
+            Utilities.ValidateForNull(surveyResponse,callback);
+            StartCoroutine(PostSurveyResponseInternal(surveyResponse,callback));
         }
 
 
 
-        private IEnumerator GetSurveys(string url, Action<CallbackResponse<Survey>> callback)
+        private IEnumerator GetSurveys(string url, Action<CallbackResponse<Survey[]>> callback)
         {
             using (UnityWebRequest www = Utilities.BuildInGameSurveyAPIWebRequest
-                (GetSurveysUrl, HttpMethod.Get.ToString(), null))
+                (SurveysUrl, HttpMethod.Get.ToString(), null))
             {
                 yield return www.Send();
                 if (Globals.DebugFlag) Debug.Log(www.responseCode);
-                CallbackResponse<Survey> response = new CallbackResponse<Survey>();
+                var response = new CallbackResponse<Survey[]>();
                 if (Utilities.IsWWWError(www))
                 {
                     if (Globals.DebugFlag) Debug.Log(www.error);
@@ -45,9 +52,12 @@ namespace InGameSurveySDK
                 {
                     try
                     {
-                        Survey survey = JsonUtility.FromJson<Survey>(www.downloadHandler.text);
-                        survey.questions = JsonHelper.GetJsonArray<Question>(survey.data);
-                        response.Result = survey;
+                        Survey[] surveys = JsonHelper.GetJsonArray<Survey>(www.downloadHandler.text);
+                        foreach (var survey in surveys)
+                        {
+                            survey.questions = JsonHelper.GetJsonArray<Question>(survey.data);
+                        }
+                        response.Result = surveys;
                         response.Status = CallBackResult.Success;
                     }
                     catch (Exception ex)
@@ -60,43 +70,28 @@ namespace InGameSurveySDK
             }
         }
 
-        //private IEnumerator PostScoreInternal(Score instance, Action<CallbackResponse<User>> onInsertCompleted)
-        //{
-        //    string json = JsonUtility.ToJson(instance);
+        private IEnumerator PostSurveyResponseInternal(SurveyResponse surveyResponse, Action<CallbackResponse> completed)
+        {
+            string json = JsonUtility.ToJson(surveyResponse);
+            //Debug.Log(json);
+            using (UnityWebRequest www = Utilities.BuildInGameSurveyAPIWebRequest(PostSurveyResponseUrl,
+                HttpMethod.Post.ToString(), json))
+            {
+                yield return www.Send();
+                if (Globals.DebugFlag) Debug.Log(www.responseCode);
 
-        //    using (UnityWebRequest www = Utilities.BuildScoresAPIWebRequest(GetLeaderboardsAPIURL() + "scores",
-        //        HttpMethod.Post.ToString(), json, userID, username))
-        //    {
-        //        yield return www.Send();
-        //        if (Globals.DebugFlag) Debug.Log(www.responseCode);
+                var response = new CallbackResponse();
 
-        //        CallbackResponse<User> response = new CallbackResponse<User>();
+                if (Utilities.IsWWWError(www))
+                {
+                    if (Globals.DebugFlag) Debug.Log(www.error);
+                    Utilities.BuildResponseObjectOnFailure(response, www);
+                }
 
-        //        if (Utilities.IsWWWError(www))
-        //        {
-        //            if (Globals.DebugFlag) Debug.Log(www.error);
-        //            Utilities.BuildResponseObjectOnFailure(response, www);
-        //        }
-
-        //        else if (www.downloadHandler != null)  //all OK
-        //        {
-        //            //let's get the new object that was created
-        //            try
-        //            {
-        //                User newObject = JsonUtility.FromJson<User>(www.downloadHandler.text);
-        //                if (Globals.DebugFlag) Debug.Log("new object is " + newObject.ToString());
-        //                response.Status = CallBackResult.Success;
-        //                response.Result = newObject;
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                response.Status = CallBackResult.DeserializationFailure;
-        //                response.Exception = ex;
-        //            }
-        //        }
-        //        onInsertCompleted(response);
-        //    }
-        //}
+               
+                completed(response);
+            }
+        }
     }
 }
 

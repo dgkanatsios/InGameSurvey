@@ -2,8 +2,8 @@ const storagehelpers = require('../shared/storagehelpers');
 const utilities = require('../shared/utilities');
 
 module.exports = function (context, req) {
-    if (utilities.validateResponseData(context.body)) {
-        storagehelpers.insertResponse(context.body).catch(error => {
+    if (utilities.validateResponseData(req.body)) {
+        storagehelpers.insertResponse(req.body).catch(error => {
             utilities.setErrorAndCloseContext(context, error, 500);
         }).then((res) => {
             context.res = {
@@ -30,7 +30,5 @@ const sampleResponse = {
     {
         "questionID": "3",
         "answer": "3-1"
-    },
-
-    ]
+    }]
 };
