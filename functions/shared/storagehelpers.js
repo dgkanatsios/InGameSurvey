@@ -36,36 +36,37 @@ function insertResponse(body) {
         const tableSvc = azurestorage.createTableService();
 
         //first, we should check if the survey exists
-        tableSvc.retrieveEntity(constants.surveysTableName, constants.surveysPartitionKey, body.surveyName, function (error, result) {
-            if (error) {
-                //survey does not exist
-                reject(`Survey with name ${body.surveyName} does not exist`);
-            }
-            else { //survey exists, so let's insert user's responses
-                tableSvc.createTableIfNotExists(constants.responsesTableNamePrefix + body.surveyName,
-                    function (error) {
-                        if (error) {
-                            reject(error);
-                        } else {
+        tableSvc.retrieveEntity(constants.surveysTableName, constants.surveysPartitionKey, body.surveyName,
+            function (error, result) {
+                if (error) {
+                    //survey does not exist
+                    reject(`Survey with name ${body.surveyName} does not exist, error: ${error}`);
+                }
+                else { //survey exists, so let's insert user's responses
+                    tableSvc.createTableIfNotExists(constants.responsesTableNamePrefix + body.surveyName,
+                        function (error) {
+                            if (error) {
+                                reject(error);
+                            } else {
 
-                            const response = {
-                                PartitionKey: constants.responsesPartitionKey,
-                                RowKey: uuidv4(),
-                                SurveyName: body.surveyName,
-                                Data: JSON.stringify(body.responseData)
-                            };
+                                const response = {
+                                    PartitionKey: constants.responsesPartitionKey,
+                                    RowKey: uuidv4(),
+                                    SurveyName: body.surveyName,
+                                    Data: JSON.stringify(body.responseData)
+                                };
 
-                            tableSvc.insertEntity(constants.responsesTableNamePrefix + body.surveyName, response, function (error) {
-                                if (error) {
-                                    reject(error);
-                                } else {
-                                    resolve(`Inserted In Game Survey Response with ID ${response.RowKey}`);
-                                }
-                            });
-                        }
-                    });
-            }
-        });
+                                tableSvc.insertEntity(constants.responsesTableNamePrefix + body.surveyName, response, function (error) {
+                                    if (error) {
+                                        reject(error);
+                                    } else {
+                                        resolve(`Inserted In Game Survey Response with ID ${response.RowKey}`);
+                                    }
+                                });
+                            }
+                        });
+                }
+            });
     });
 
 }

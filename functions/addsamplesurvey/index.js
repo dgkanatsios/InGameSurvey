@@ -8,16 +8,14 @@ module.exports = function (context, req) {
     promises.push(storagehelpers.insertResponse(sampleResponse1));
     promises.push(storagehelpers.insertResponse(sampleResponse2));
 
-    Promise.all(promises).catch(error => {
-        utilities.setErrorAndCloseContext(context, error, 500);
-    }).then((res) => {
+    Promise.all(promises).then((res) => {
         context.res = {
             body: res
         };
         context.done();
+    }).catch(error => {
+        utilities.setErrorAndCloseContext(context, error, 500);
     });
-
-
 };
 
 

@@ -3,13 +3,13 @@ const utilities = require('../shared/utilities');
 
 module.exports = function (context, req) {
     if (utilities.validateSurveyData(req.body)) {
-        storagehelpers.insertSurvey(req.body).catch(error => {
-            utilities.setErrorAndCloseContext(context, error, 500);
-        }).then((res) => {
+        storagehelpers.insertSurvey(req.body).then((res) => {
             context.res = {
                 body: res
             };
             context.done();
+        }).catch(error => {
+            utilities.setErrorAndCloseContext(context, error, 500);
         });
     } else {
         utilities.setErrorAndCloseContext(context, `Need POST Data with something like the following: ${JSON.stringify(sampleSurvey)}`, 400);
