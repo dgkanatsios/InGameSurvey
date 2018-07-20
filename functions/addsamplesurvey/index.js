@@ -14,6 +14,8 @@ module.exports = function (context, req) {
                 body: res
             };
             context.done();
+        }).catch(error => {
+            throw error;
         });
     }).catch(error => {
         utilities.setErrorAndCloseContext(context, error, 500);
@@ -98,11 +100,29 @@ const sampleResponse2 = {
     },
     {
         "questionID": "2",
-        "answer": "freetextanswer2"
+        "answer": "freetextanswer2-2"
     },
     {
         "questionID": "3",
         "answer": "3-1"
+    },
+
+    ]
+};
+
+const sampleResponse3 = {
+    surveyName: 'mysurvey',
+    responseData: [{
+        "questionID": "1",
+        "answer": "1-2"
+    },
+    {
+        "questionID": "2",
+        "answer": "freetextanswer2-3"
+    },
+    {
+        "questionID": "3",
+        "answer": "3-2"
     },
 
     ]
