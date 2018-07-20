@@ -3,16 +3,18 @@ const utilities = require('../shared/utilities');
 
 module.exports = function (context, req) {
 
-    let promises = [];
-    promises.push(storagehelpers.insertSurvey(sampleSurvey));
-    promises.push(storagehelpers.insertResponse(sampleResponse1));
-    promises.push(storagehelpers.insertResponse(sampleResponse2));
+    storagehelpers.insertSurvey(sampleSurvey).then(() => {
+        let promises = [];
 
-    Promise.all(promises).then((res) => {
-        context.res = {
-            body: res
-        };
-        context.done();
+        promises.push(storagehelpers.insertResponse(sampleResponse1));
+        promises.push(storagehelpers.insertResponse(sampleResponse2));
+
+        Promise.all(promises).then((res) => {
+            context.res = {
+                body: res
+            };
+            context.done();
+        });
     }).catch(error => {
         utilities.setErrorAndCloseContext(context, error, 500);
     });
